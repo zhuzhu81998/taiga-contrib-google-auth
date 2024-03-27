@@ -178,8 +178,28 @@ def me(access_code:str) -> tuple:
     """
     idt = login(access_code)
 
-    profile = jwt.decode(idt, verify=False, algorithms=["RS256"])
+    # Fetch Google's OAuth 2.0 public keys
+    keys_url = "https://www.googleapis.com/oauth2/v3/certs"
+    response = requests.get(keys_url)
+    keys = response.json().get('keys')
 
-    return User(id=profile['email'].split("@")[0],username=profile['email'].split("@")[0],full_name= "",email=profile['email'],bio= "")
+    # Get the header from the ID token to determine which key to use
+    headers = jwt.get_unverified_header(idt)
+    kid = headers['kid']
 
+    # Find the key that matches the 'kid' from the token's header
+    key = next((k for k in keys if k['kid'] == kid), None)
+    if key is None:
+        raise ValueError("Matching key not found.")
 
+    # Construct the public key
+    public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
+
+    # Now decode the JWT using the matching public key
+    profile = jwt.decode(idt, public_key, algorithms=["RS256"], verify=True)
+
+    return User(id=profile['email'].split("@")[0],
+                username=profile['email'].split("@")[0],
+                full_name="",
+                email=profile['email'],
+                bio="")
