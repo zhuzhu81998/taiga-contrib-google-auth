@@ -178,7 +178,7 @@ def me(access_code:str) -> tuple:
     """
     idt = login(access_code)
 
-    profile = jwt.decode(idt, verify=False)
+    profile = jwt.decode(idt, verify=False, algorithms=["RS256"])
 
     return User(id=profile['email'].split("@")[0],username=profile['email'].split("@")[0],full_name= "",email=profile['email'],bio= "")
 
