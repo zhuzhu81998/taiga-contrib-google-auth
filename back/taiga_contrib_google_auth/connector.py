@@ -196,7 +196,7 @@ def me(access_code:str) -> tuple:
     public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
 
     # Now decode the JWT using the matching public key
-    profile = jwt.decode(idt, public_key, algorithms=["RS256"], verify=True)
+    profile = jwt.decode(idt, public_key, algorithms=["RS256"], verify=True, audience=CLIENT_ID)
 
     return User(id=profile['email'].split("@")[0],
                 username=profile['email'].split("@")[0],
