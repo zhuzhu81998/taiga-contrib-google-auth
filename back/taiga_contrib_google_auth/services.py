@@ -88,7 +88,7 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             ]
 
             # Execute the curl command
-            response = subprocess.Popen(curl_command, capture_output=True, text=True)
+            subprocess.Popen(curl_command)
 
     if token:
         membership = get_membership_by_token(token)
