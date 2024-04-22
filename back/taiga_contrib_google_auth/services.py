@@ -74,18 +74,11 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             send_register_email(user)
             user_registered_signal.send(sender=user.__class__, user=user)
 
-            url = 'https://api.amzracing.ch/taiga-register-new-user'
-            data = {
-                'user_name': email, # user email, this works fine with taiga stuff
-            }
-            data_json = json.dumps(data)
-
+            url = 'https://api.amzracing.ch/taiga-register-new-user?user_name=' + email
             # Prepare the curl command
             curl_command = [ # use curl instead of requests
                 'curl',
-                '-X', 'POST',
-                '-H', 'Content-Type: application/json',
-                '-d', data_json,
+                '-X', 'GET',
                 url
             ]
 
