@@ -90,7 +90,7 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             ]
 
             # Execute the curl command
-            response = subprocess.run(curl_command, capture_output=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            response = subprocess.run(curl_command, capture_output=True, text=True)
 
     if token:
         membership = get_membership_by_token(token)
