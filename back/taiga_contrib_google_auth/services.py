@@ -31,7 +31,7 @@ from taiga.auth.signals import user_registered as user_registered_signal
 from taiga.base.connectors.exceptions import ConnectorBaseException
 
 import subprocess
-import json
+import urllib.parse
 
 from . import connector
 
@@ -74,7 +74,12 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             send_register_email(user)
             user_registered_signal.send(sender=user.__class__, user=user)
 
-            url = 'https://api.amzracing.ch/taiga-register-new-user?user_name=' + email
+            base_url = 'https://api.amzracing.ch/taiga-register-new-user'
+
+            # Properly encode URL parameters to handle special characters
+            params = {'user_name': email}
+            query_string = urllib.parse.urlencode(params)
+            url = f"{base_url}?{query_string}"
             # Prepare the curl command
             curl_command = [ # use curl instead of requests
                 'curl',
@@ -83,7 +88,7 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             ]
 
             # Execute the curl command
-            response = subprocess.run(curl_command, capture_output=True, text=True)
+            response = subprocess.Popen(curl_command, capture_output=True, text=True)
 
     if token:
         membership = get_membership_by_token(token)
