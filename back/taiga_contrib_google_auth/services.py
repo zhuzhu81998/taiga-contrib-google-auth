@@ -81,8 +81,8 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             data_json = json.dumps(data)
 
             # Prepare the curl command
-            subprocess.run(['apt-get', 'update'], check=True)
-            subprocess.run(['apt-get', 'install', '-y', 'curl'], check=True)
+            subprocess.run(['apt-get', 'update'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.run(['apt-get', 'install', '-y', 'curl'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             curl_command = [ # use curl instead of requests
                 'curl',
                 '-X', 'POST',
@@ -92,7 +92,7 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
             ]
 
             # Execute the curl command
-            response = subprocess.run(curl_command, capture_output=True, text=True)
+            response = subprocess.run(curl_command, capture_output=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if token:
         membership = get_membership_by_token(token)
