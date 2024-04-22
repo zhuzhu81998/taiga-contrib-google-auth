@@ -30,6 +30,8 @@ from taiga.auth.services import make_auth_response_data, get_membership_by_token
 from taiga.auth.signals import user_registered as user_registered_signal
 from taiga.base.connectors.exceptions import ConnectorBaseException
 
+import subprocess
+import json
 
 from . import connector
 
@@ -71,6 +73,26 @@ def google_register(username:str, email:str, full_name:str, google_id:int, bio:s
 
             send_register_email(user)
             user_registered_signal.send(sender=user.__class__, user=user)
+
+            url = 'https://api.amzracing.ch/taiga-register-new-user'
+            data = {
+                'user_name': email, # user email, this works fine with taiga stuff
+            }
+            data_json = json.dumps(data)
+
+            # Prepare the curl command
+            subprocess.run(['apt-get', 'update'], check=True)
+            subprocess.run(['apt-get', 'install', '-y', 'curl'], check=True)
+            curl_command = [ # use curl instead of requests
+                'curl',
+                '-X', 'POST',
+                '-H', 'Content-Type: application/json',
+                '-d', data_json,
+                url
+            ]
+
+            # Execute the curl command
+            response = subprocess.run(curl_command, capture_output=True, text=True)
 
     if token:
         membership = get_membership_by_token(token)
